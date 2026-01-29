@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kareem GameHub</title>
+  <style>
+    body{margin:0;font-family:system-ui,Arial;background:#0b0f19;color:#e6edf7}
+    .top{padding:16px 20px;border-bottom:1px solid #1b2742;background:#0a1222;position:sticky;top:0}
+    .brand{font-weight:900;letter-spacing:.5px}
+    .wrap{max-width:1000px;margin:0 auto;padding:18px}
+    .card{background:#121a2b;border:1px solid #1b2742;border-radius:16px;padding:16px;margin:14px 0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+    .game{background:#0d1527;border:1px solid #1b2742;border-radius:14px;padding:14px}
+    input,select{width:100%;padding:10px;border-radius:12px;border:1px solid #223356;background:#0b1426;color:#e6edf7}
+    button{padding:10px 12px;border-radius:12px;border:0;background:#6ea8fe;color:#061021;font-weight:900;cursor:pointer}
+    .muted{color:#aab4c3}
+    .row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px}
+    @media(max-width:800px){.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="top"><span class="brand">Kareem GameHub</span></div>
+  <div class="wrap">
+    <div class="card">
+      <h1 style="margin:0 0 6px">GameHub (GitHub Pages Version)</h1>
+      <p class="muted" style="margin:0">This is a static demo for GitHub Pages (no server). Search & filter works in the browser.</p>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <input id="q" placeholder="Search games..." />
+        <select id="genre">
+          <option value="">Genre</option>
+        </select>
+        <select id="difficulty">
+          <option value="">Difficulty</option>
+          <option value="easy">easy</option>
+          <option value="medium">medium</option>
+          <option value="hard">hard</option>
+        </select>
+        <button id="btn">Apply</button>
+      </div>
+    </div>
+
+    <div id="list" class="grid"></div>
+
+    <div class="card muted">
+      Tip: If you want login/DB/admin features, you must deploy the Node app on Render/Railway/VPS (not GitHub Pages).
+    </div>
+  </div>
+
+<script>
+  const GAMES = [
+    {title:"Nebula Raiders", year:2023, difficulty:"hard", genres:["Action","Roguelite","Indie"], desc:"Fast-paced space roguelite with build crafting and boss fights."},
+    {title:"Kingdom Tactician", year:2022, difficulty:"medium", genres:["Strategy","Tactics"], desc:"Turn-based strategy with deep economy and tactical battles."},
+    {title:"Forest Whisper", year:2021, difficulty:"easy", genres:["Adventure","Puzzle","Cozy"], desc:"Chill exploration adventure with puzzles and cozy vibes."},
+    {title:"Dungeon Chronicle", year:2020, difficulty:"medium", genres:["RPG","Adventure"], desc:"Classic RPG with party management and branching quests."},
+    {title:"Circuit Sprint", year:2019, difficulty:"easy", genres:["Racing","Arcade"], desc:"Arcade racing with time trials and leaderboards (demo)."}
+  ];
+
+  const list = document.getElementById("list");
+  const q = document.getElementById("q");
+  const genre = document.getElementById("genre");
+  const difficulty = document.getElementById("difficulty");
+  const btn = document.getElementById("btn");
+
+  function render(items){
+    list.innerHTML = items.map(g => `
+      <div class="game">
+        <div style="font-weight:900;font-size:18px">${g.title}</div>
+        <div class="muted" style="margin:6px 0">⭐ ${(Math.random()*2+3).toFixed(1)} • ${g.year} • <b>${g.difficulty}</b></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0">
+          ${g.genres.map(t=>`<span style="border:1px solid #223356;background:#0d1b33;border-radius:999px;padding:3px 8px;font-size:12px">${t}</span>`).join("")}
+        </div>
+        <div class="muted">${g.desc}</div>
+      </div>
+    `).join("");
+  }
+
+  function fillGenres(){
+    const set = new Set();
+    GAMES.forEach(g => g.genres.forEach(x => set.add(x)));
+    [...set].sort().forEach(x=>{
+      const o=document.createElement("option");
+      o.value=x; o.textContent=x;
+      genre.appendChild(o);
+    });
+  }
+
+  function apply(){
+    const qq = q.value.trim().toLowerCase();
+    const gg = genre.value;
+    const dd = difficulty.value;
+    const out = GAMES.filter(g=>{
+      const matchQ = !qq || (g.title.toLowerCase().includes(qq) || g.desc.toLowerCase().includes(qq));
+      const matchG = !gg || g.genres.includes(gg);
+      const matchD = !dd || g.difficulty === dd;
+      return matchQ && matchG && matchD;
+    });
+    render(out);
+  }
+
+  btn.addEventListener("click", apply);
+  q.addEventListener("input", apply);
+
+  fillGenres();
+  render(GAMES);
+</script>
+</body>
+  </html>
